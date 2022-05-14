@@ -7,7 +7,8 @@ function Router () {
     return (
         <BrowserRouter>
             <Switch>
-               <Route path="/:coinId">
+               <Route path="/:coinId"> 
+               {/*Coin.tsx에서 선언한 const {coinId} = useParams<Params>(); */}
                    <Coin/>
                </Route>
 

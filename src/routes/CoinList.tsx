@@ -26,8 +26,10 @@ background-color: white;
     margin-top: 10px;
     border-radius: 15px;
     a {
+       align-items: center;
+        padding: 20px;
         transition: color 0.2s ease-in;
-        display: block; //글씨 밖까지 클릭 가능
+        display: flex; //가운데 맞춤
     }
     &:hover {
         a {
@@ -53,13 +55,13 @@ interface CoinInterface { //ts에게 알려주기 위한 interface
         rank: number,
         is_new: boolean,
         is_active: boolean,
-        type: string,
+        type: string, }
         
 const Img = styled.img`
 width: 25px;
 height :25px;
-
-`};
+margin-right: 10px;
+`;
 
 
 function CoinList () {
@@ -70,9 +72,7 @@ function CoinList () {
             const response = await fetch ("https://api.coinpaprika.com/v1/coins");
             const json = await response.json();
             setCoins(json.slice(0,100));
-            // setLoding(false);
-;
-            console.log(coins);
+            setLoding(false);
         }) ();
     }, []);
     return (
@@ -84,8 +84,14 @@ function CoinList () {
             <Coins>
                {coins. map((coin)=>(
                    <Coin key={coin.id}> 
-                    <Link to={coin.id}>
-                        <img src= {`https://coinicons-api.vercel.app/${coin.symbol.toLocaleLowerCase()}`}></img>
+                    <Link to={ {
+                        pathname : `/${coin.id}`,
+                        state :{name:coin.name},
+
+                    }}>
+                        
+                        <Img src= {`https://cryptocurrencyliveprices.com/img/${coin.id}.png`}>
+                        </Img>
                         {coin.name} &rarr;
                     </Link>
                    </Coin>
