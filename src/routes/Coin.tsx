@@ -28,17 +28,71 @@ const Loader = styled.div`
 
 interface Params {
     coinId:string;
-}
+};
 
 interface RouteState {
     name:string;
+};
 
-}
+
+
+
+
+interface IInfoData {
+    id : string;
+    name : string;
+    symbol : string;
+    rank : number;
+    is_new : boolean;
+    is_active : boolean;
+    type : string;
+    description : string;
+    message : string;
+    open_source : boolean;
+    started_at : string;
+    development_status : string;
+    hardware_wallet : boolean;
+    proof_type : string;
+    org_structure : string;
+    hash_algorithm : string;
+    first_data_at : string;
+    last_data_at : string;
+};
+
+interface IPriceData {
+    id : string;
+    name : string;
+    symbol : string;
+    rank : number;
+    is_new : boolean;
+    is_active : boolean;
+    type : string;
+    tags : object;
+    team : object;
+    description : string;
+    message : string;
+    open_source : boolean;
+    started_at : string;
+    development_status : string;
+    hardware_wallet : boolean;
+    proof_type : string;
+    org_structure : string;
+    hash_algorithm : string;
+    links : object;
+    links_extended : object;
+    whitepaper : object;
+    first_data_at : string;
+    last_data_at : string;
+};
+
+
 
 function Coin () {
     const {coinId} = useParams<Params>();
     // const [loding, setLoding] = useState(true);
     const {state} = useLocation<RouteState>(); //react-router-dom에서 제공하는 useLocation
+    const [data, setData] = useState<IInfoData>({});
+    const [price, setPrice] = useState<IPriceData>({});
     
     useEffect ( ()=> {
         (async () => {
@@ -47,9 +101,11 @@ function Coin () {
             // const response = await fetch (`https://api.coinpaprika.com/v1/coins/${coinId}`);
             // const json = response.json();
             console.log(coinData);
-            
-            const coinPrice = await (await fetch(`https://api.coinpaprika.com/v1/tickers${coinId}`)).json();
+            setData(coinData);
+            //코인 가격받기
+            const coinPrice = await (await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)).json();
             console.log(coinPrice);
+            setPrice(coinPrice);
         }
         ) ();
         }, []);
