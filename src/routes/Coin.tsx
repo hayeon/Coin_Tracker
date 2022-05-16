@@ -1,7 +1,16 @@
 import styled from "styled-components";
-import { useLocation, useParams } from "react-router-dom";
+import { Switch, useLocation, useParams } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
+
+
+const Overview = styled.div`
+    display : flex;
+    justify-content: space-between;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding : 10px 20px;
+    border-radius: 10px;
+`;
 
 const Container = styled.div `
     padding: 0px, 20px;
@@ -33,10 +42,6 @@ interface Params {
 interface RouteState {
     name:string;
 };
-
-
-
-
 
 interface IInfoData {
     id : string;
@@ -83,16 +88,38 @@ interface IPriceData {
     whitepaper : object;
     first_data_at : string;
     last_data_at : string;
+    quotes : {
+        USD : { 
+        ath_date: string;
+        ath_price: number;
+        market_cap: number;
+        market_cap_change_24h: number;
+        percent_change_1h: number;
+        percent_change_1y: number;
+        percent_change_6h: number;
+        percent_change_7d: number;
+        percent_change_12h: number;
+        percent_change_15m: number;
+        percent_change_24h: number;
+        percent_change_30d: number;
+        percent_change_30m: number;
+        percent_from_price_ath: number;
+        price: number;
+        volume_24h: number;
+        volume_24h_change_24h: number;
+            
+        }
+    }; //배열
 };
 
 
 
 function Coin () {
     const {coinId} = useParams<Params>();
-    // const [loding, setLoding] = useState(true);
+    const [loding, setLoding] = useState(true);
     const {state} = useLocation<RouteState>(); //react-router-dom에서 제공하는 useLocation
-    const [data, setData] = useState<IInfoData>({});
-    const [price, setPrice] = useState<IPriceData>({});
+    const [data, setData] = useState<IInfoData>();
+    const [price, setPrice] = useState<IPriceData>();
     
     useEffect ( ()=> {
         (async () => {
@@ -100,23 +127,36 @@ function Coin () {
             //캡슐화! 아래와 같음
             // const response = await fetch (`https://api.coinpaprika.com/v1/coins/${coinId}`);
             // const json = response.json();
-            console.log(coinData);
+            //console.log(coinData);
             setData(coinData);
             //코인 가격받기
             const coinPrice = await (await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)).json();
             console.log(coinPrice);
             setPrice(coinPrice);
+            setLoding(false);
         }
         ) ();
-        }, []);
+        }, [coinId]);
+        //coinId를 넣으면 coinId가 바뀔 때 또 다시 컴포넌트가 실행되지 않을까요?
+        //coinId는 바뀔 일이 없기 때문에 괜찮슴다
     
     return (
         <Container> 
             <Header>
                  <Title>코인 목록 {state?.name || "loading"} </Title>
             </Header>
-            {/* {loding ? (<Loader>Loading</Loader>):(null)} */}
+            {loding ? (<Loader>Loading</Loader>): price?.quotes.USD}
+            
+            <Switch>
+                <div>
+                    
+                </div>
+            </Switch>
+       
         </Container>
+
+       
+
     );
 };
 

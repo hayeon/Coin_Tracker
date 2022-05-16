@@ -15,6 +15,12 @@ function Router () {
                 <Route path="/">
                     <CoinList/>                    
                 </Route>
+
+                <Route path=":/price">
+
+                </Route>
+                
+
             </Switch>
         </BrowserRouter>
     );
