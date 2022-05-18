@@ -1,16 +1,33 @@
 import styled from "styled-components";
-import { Switch, useLocation, useParams } from "react-router-dom";
+import { Route, Switch, useLocation, useParams } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
+import Price from "./Price";
+import Chart from "./Chart";
 
 
-const Overview = styled.div`
-    display : flex;
-    justify-content: space-between;
-    background-color: rgba(0, 0, 0, 0.5);
-    padding : 10px 20px;
-    border-radius: 10px;
+const Overview = styled.div` //배경
+  display: flex;
+  justify-content: space-between;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 10px 20px;
+  border-radius: 10px;
 `;
+const OverviewItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  span:first-child {
+    font-size: 10px;
+    font-weight: 400;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+`;
+const Description = styled.p` //코인에 대한 설명
+  margin: 20px 0px;
+`;
+
 
 const Container = styled.div `
     padding: 0px, 20px;
@@ -65,31 +82,18 @@ interface IInfoData {
 };
 
 interface IPriceData {
-    id : string;
-    name : string;
-    symbol : string;
-    rank : number;
-    is_new : boolean;
-    is_active : boolean;
-    type : string;
-    tags : object;
-    team : object;
-    description : string;
-    message : string;
-    open_source : boolean;
-    started_at : string;
-    development_status : string;
-    hardware_wallet : boolean;
-    proof_type : string;
-    org_structure : string;
-    hash_algorithm : string;
-    links : object;
-    links_extended : object;
-    whitepaper : object;
-    first_data_at : string;
-    last_data_at : string;
-    quotes : {
-        USD : { 
+    id: string;
+    name: string;
+    symbol: string;
+    rank: number;
+    circulating_supply: number;
+    total_supply: number;
+    max_supply: number;
+    beta_value: number;
+    first_data_at: string;
+    last_updated: string;
+    quotes: {
+      USD: {
         ath_date: string;
         ath_price: number;
         market_cap: number;
@@ -107,10 +111,9 @@ interface IPriceData {
         price: number;
         volume_24h: number;
         volume_24h_change_24h: number;
-            
-        }
-    }; //배열
-};
+      };
+    };
+  }
 
 
 
@@ -145,13 +148,47 @@ function Coin () {
             <Header>
                  <Title>코인 목록 {state?.name || "loading"} </Title>
             </Header>
-            {loding ? (<Loader>Loading</Loader>): price?.quotes.USD}
-            
-            <Switch>
-                <div>
-                    
-                </div>
-            </Switch>
+               {loding ? (
+        <Loader>Loading...</Loader>
+      ) : (
+        <>
+          <Overview>
+            <OverviewItem>
+              <span>순위:</span>
+              <span>{data?.rank}</span>
+            </OverviewItem>
+            <OverviewItem>
+              <span>심볼:</span>
+              <span>${data?.symbol}</span>
+            </OverviewItem>
+            <OverviewItem>
+              <span>오픈소스 가능 여부:</span>
+              <span>{data?.open_source ? "Yes" : "No"}</span>
+            </OverviewItem>
+          </Overview>
+          <Description>{data?.description}</Description>
+          <Overview>
+            <OverviewItem>
+              <span>Total Suply:</span>
+              <span>{price?.total_supply}</span>
+            </OverviewItem>
+            <OverviewItem>
+              <span>Max Supply:</span>
+              <span>{price?.max_supply}</span>
+            </OverviewItem>
+          </Overview>
+          <Switch>
+            <Route path={`/${coinId}/price`}>
+              <Price />
+            </Route>
+            <Route path={`/${coinId}/chart`}>
+              <Chart />
+            </Route>
+          </Switch>
+        </>
+      )}
+
+
        
         </Container>
 
