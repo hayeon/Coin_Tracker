@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useEffect } from "react";
 import Price from "./Price";
 import Chart from "./Chart";
+import { useQuery } from "react-query";
+import { fetchCoinData, fetchCoinPrice } from "./Api";
 
 
 const Overview = styled.div` //배경
@@ -119,29 +121,31 @@ interface IPriceData {
 
 function Coin () {
     const {coinId} = useParams<Params>();
-    const [loding, setLoding] = useState(true);
-    const {state} = useLocation<RouteState>(); //react-router-dom에서 제공하는 useLocation
-    const [data, setData] = useState<IInfoData>();
-    const [price, setPrice] = useState<IPriceData>();
+    // const [loding, setLoding] = useState(true);
+    // const {state} = useLocation<RouteState>(); //react-router-dom에서 제공하는 useLocation
+    // const [data, setData] = useState<IInfoData>();
+    // const [price, setPrice] = useState<IPriceData>();
+    const { } =useQuery(coinId, ()=> fetchCoinData(coinId));
+    const { } =useQuery(coinId, ()=> fetchCoinPrice(coinId));
     
-    useEffect ( ()=> {
-        (async () => {
-            const coinData = await (await fetch (`https://api.coinpaprika.com/v1/coins/${coinId}`)).json();
-            //캡슐화! 아래와 같음
-            // const response = await fetch (`https://api.coinpaprika.com/v1/coins/${coinId}`);
-            // const json = response.json();
-            //console.log(coinData);
-            setData(coinData);
-            //코인 가격받기
-            const coinPrice = await (await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)).json();
-            console.log(coinPrice);
-            setPrice(coinPrice);
-            setLoding(false);
-        }
-        ) ();
-        }, [coinId]);
-        //coinId를 넣으면 coinId가 바뀔 때 또 다시 컴포넌트가 실행되지 않을까요?
-        //coinId는 바뀔 일이 없기 때문에 괜찮슴다
+    // useEffect ( ()=> {
+    //     (async () => {
+    //         const coinData = await (await fetch (`https://api.coinpaprika.com/v1/coins/${coinId}`)).json();
+    //         //캡슐화! 아래와 같음
+    //         // const response = await fetch (`https://api.coinpaprika.com/v1/coins/${coinId}`);
+    //         // const json = response.json();
+    //         //console.log(coinData);
+    //         setData(coinData);
+    //         //코인 가격받기
+    //         const coinPrice = await (await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)).json();
+    //         console.log(coinPrice);
+    //         setPrice(coinPrice);
+    //         setLoding(false);
+    //     }
+    //     ) ();
+    //     }, [coinId]);
+    //     //coinId를 넣으면 coinId가 바뀔 때 또 다시 컴포넌트가 실행되지 않을까요?
+    //     //coinId는 바뀔 일이 없기 때문에 괜찮슴다
     
     return (
         <Container> 
@@ -187,9 +191,6 @@ function Coin () {
           </Switch>
         </>
       )}
-
-
-       
         </Container>
 
        

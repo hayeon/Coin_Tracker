@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import { useState } from "react";
+import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { fetchCoins } from "./Api";
 
 const Container = styled.div `
     padding: 0px, 20px;
@@ -65,24 +67,28 @@ margin-right: 10px;
 
 
 function CoinList () {
-    const [coins, setCoins] = useState<CoinInterface[]>([]);
-    const [loding, setLoding] = useState(true);
-    useEffect(()=> {
-        (async() => {
-            const response = await fetch ("https://api.coinpaprika.com/v1/coins");
-            const json = await response.json();
-            setCoins(json.slice(0,100));
-            setLoding(false);
-        }) ();
-    }, []);
+
+    const {isLoading, data} = useQuery<CoinInterface[]>("queryKey", fetchCoins);
+    
+
+    // const [coins, setCoins] = useState<CoinInterface[]>([]);
+    // const [loding, setLoding] = useState(true);
+    // useEffect(()=> {
+    //     (async() => {
+    //         const response = await fetch ("https://api.coinpaprika.com/v1/coins");
+    //         const json = await response.json();
+    //         setCoins(json.slice(0,100));
+    //         setLoding(false);
+    //     }) ();
+    // }, []);
     return (
        <Container> 
            <Header>
                 <Title>코인 목록</Title>
            </Header>
-           {loding ? (<Loader>Loading</Loader>):(
+           {isLoading ? (<Loader>Loading...</Loader>):(
             <Coins>
-               {coins. map((coin)=>(
+               {data?. map((coin)=>( //개체가 'undefined'인 것 같습니다.에 대한 해결책 옵셔널 체이징 ? 추가 값이 unDefined이면 undefined 리턴
                    <Coin key={coin.id}> 
                     <Link to={ {
                         pathname : `/${coin.id}`,

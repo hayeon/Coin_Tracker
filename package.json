@@ -2,7 +2,7 @@
   "name": "react-masterclass",
   "version": "0.1.0",
   "private": true,
-  "proxy" : "http://localhost:3000/",
+  "proxy": "http://localhost:3000/",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.2.0",
@@ -48,5 +48,4 @@
   "devDependencies": {
     "@types/react-router-dom": "^5.3.3"
   }
-  
 }
