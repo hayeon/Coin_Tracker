@@ -121,12 +121,22 @@ interface IPriceData {
 
 function Coin () {
     const {coinId} = useParams<Params>();
+    const {state} = useLocation<RouteState>(); //react-router-dom에서 제공하는 useLocation
+    const {isLoading: dataLoading, data:coinData} = useQuery<IInfoData>(["coinData",coinId], () => fetchCoinData(coinId));
+  //fetchCoin(coinId)로 작성하면 함수 실행하는 것이기 때문에 함수 실행 후의 promise가 바로 들어간다.
+  //따라서 함수를 바로 실행하는 것이 아닌 () => fetchCoinData(coinId) 형식으로 함수를 실행하는 함수를 새로 만들어 인자로 넘겨야 <함수 자체>를 넘길 수 있다!
+ //fetchCoin: 함수 자체를 넘기는 것 fetchCoin() 함수 실행 후의 리턴값을 넘기는 것
+    const{isLoading:priceLoading, data:priceData} = useQuery<IPriceData>(["coinPrice",coinId], () => fetchCoinPrice(coinId));
+
+    //리액트 쿼리는 각기 다른 key를 바라기 때문에 같은 키를 쓰는 건 좋지 않음
+    //그리고 리액트 쿼리는 key를 array로 감싸서 표현함
+    //따라서, key를 array로 만든 다음, 첫번째 item은 coinData, 두번째는 coinPrice로 주면 각각 고유한 id를 가지게 됨
+
     // const [loding, setLoding] = useState(true);
-    // const {state} = useLocation<RouteState>(); //react-router-dom에서 제공하는 useLocation
     // const [data, setData] = useState<IInfoData>();
     // const [price, setPrice] = useState<IPriceData>();
-    const { } =useQuery(coinId, ()=> fetchCoinData(coinId));
-    const { } =useQuery(coinId, ()=> fetchCoinPrice(coinId));
+    // const { } =useQuery(coinId, ()=> fetchCoinData(coinId));
+    // const { } =useQuery(coinId, ()=> fetchCoinPrice(coinId));
     
     // useEffect ( ()=> {
     //     (async () => {
@@ -147,38 +157,39 @@ function Coin () {
     //     //coinId를 넣으면 coinId가 바뀔 때 또 다시 컴포넌트가 실행되지 않을까요?
     //     //coinId는 바뀔 일이 없기 때문에 괜찮슴다
     
+    const loading = dataLoading || priceLoading;
     return (
         <Container> 
             <Header>
                  <Title>코인 목록 {state?.name || "loading"} </Title>
             </Header>
-               {loding ? (
+               {loading ? (
         <Loader>Loading...</Loader>
       ) : (
         <>
           <Overview>
             <OverviewItem>
               <span>순위:</span>
-              <span>{data?.rank}</span>
+              <span>{coinData?.rank}</span>
             </OverviewItem>
             <OverviewItem>
               <span>심볼:</span>
-              <span>${data?.symbol}</span>
+              <span>${coinData?.symbol}</span>
             </OverviewItem>
             <OverviewItem>
               <span>오픈소스 가능 여부:</span>
-              <span>{data?.open_source ? "Yes" : "No"}</span>
+              <span>{coinData?.open_source ? "Yes" : "No"}</span>
             </OverviewItem>
           </Overview>
-          <Description>{data?.description}</Description>
+          <Description>{coinData?.description}</Description>
           <Overview>
             <OverviewItem>
               <span>Total Suply:</span>
-              <span>{price?.total_supply}</span>
+              <span>{priceData?.total_supply}</span>
             </OverviewItem>
             <OverviewItem>
               <span>Max Supply:</span>
-              <span>{price?.max_supply}</span>
+              <span>{priceData?.max_supply}</span>
             </OverviewItem>
           </Overview>
           <Switch>

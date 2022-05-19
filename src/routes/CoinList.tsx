@@ -68,7 +68,7 @@ margin-right: 10px;
 
 function CoinList () {
 
-    const {isLoading, data} = useQuery<CoinInterface[]>("queryKey", fetchCoins);
+    const {isLoading, data} = useQuery<CoinInterface[]>("coinListKey", fetchCoins);
     
 
     // const [coins, setCoins] = useState<CoinInterface[]>([]);
