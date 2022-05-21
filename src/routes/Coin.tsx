@@ -196,8 +196,10 @@ function Coin () {
             <Route path={`/${coinId}/price`}>
               <Price />
             </Route>
+            
             <Route path={`/${coinId}/chart`}>
-              <Chart />
+              <Chart coinId= {coinId} /> 
+              {/* Chart.tsx는 coinId가 없으므로, Chart.tsx에서 Interface 선언 */}
             </Route>
           </Switch>
         </>
