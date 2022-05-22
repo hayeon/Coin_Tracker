@@ -20,7 +20,7 @@ export async function fetchCoinPrice(coinId:string) { //코인 가격api
 export async function fetchCoinHistory(coinId: string) {
     // Math.floor() 내림차순 1.9 => 1
     const endDate = Math.floor(Date.now()/1000);
-    const startDate = endDate - 60*60*24*7; //일주일 전 
+    const startDate = endDate - 60*60*24*14; //2주 전 내역까지 보여줌 
     const coinHistory = await (await fetch(`https://api.coinpaprika.com/v1/coins/${coinId}/ohlcv/historical?start=${startDate}&end=${endDate}`)).json();
     console.log(coinHistory);
     return coinHistory;

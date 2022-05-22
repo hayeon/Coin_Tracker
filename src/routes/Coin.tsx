@@ -1,12 +1,10 @@
 import styled from "styled-components";
 import { Route, Switch, useLocation, useParams } from "react-router-dom";
-import { useState } from "react";
-import { useEffect } from "react";
 import Price from "./Price";
 import Chart from "./Chart";
 import { useQuery } from "react-query";
 import { fetchCoinData, fetchCoinPrice } from "./Api";
-
+import {Helmet} from "react-helmet";
 
 const Overview = styled.div` //배경
   display: flex;
@@ -117,12 +115,17 @@ interface IPriceData {
     };
   }
 
-
-
 function Coin () {
     const {coinId} = useParams<Params>();
     const {state} = useLocation<RouteState>(); //react-router-dom에서 제공하는 useLocation
-    const {isLoading: dataLoading, data:coinData} = useQuery<IInfoData>(["coinData",coinId], () => fetchCoinData(coinId));
+    const {isLoading: dataLoading, data:coinData} = useQuery<IInfoData>(
+      ["coinData",coinId], 
+      () => fetchCoinData(coinId),
+      {
+        refetchInterval: 5000 //5sec
+      }
+
+      );
   //fetchCoin(coinId)로 작성하면 함수 실행하는 것이기 때문에 함수 실행 후의 promise가 바로 들어간다.
   //따라서 함수를 바로 실행하는 것이 아닌 () => fetchCoinData(coinId) 형식으로 함수를 실행하는 함수를 새로 만들어 인자로 넘겨야 <함수 자체>를 넘길 수 있다!
  //fetchCoin: 함수 자체를 넘기는 것 fetchCoin() 함수 실행 후의 리턴값을 넘기는 것
@@ -132,33 +135,14 @@ function Coin () {
     //그리고 리액트 쿼리는 key를 array로 감싸서 표현함
     //따라서, key를 array로 만든 다음, 첫번째 item은 coinData, 두번째는 coinPrice로 주면 각각 고유한 id를 가지게 됨
 
-    // const [loding, setLoding] = useState(true);
-    // const [data, setData] = useState<IInfoData>();
-    // const [price, setPrice] = useState<IPriceData>();
-    // const { } =useQuery(coinId, ()=> fetchCoinData(coinId));
-    // const { } =useQuery(coinId, ()=> fetchCoinPrice(coinId));
-    
-    // useEffect ( ()=> {
-    //     (async () => {
-    //         const coinData = await (await fetch (`https://api.coinpaprika.com/v1/coins/${coinId}`)).json();
-    //         //캡슐화! 아래와 같음
-    //         // const response = await fetch (`https://api.coinpaprika.com/v1/coins/${coinId}`);
-    //         // const json = response.json();
-    //         //console.log(coinData);
-    //         setData(coinData);
-    //         //코인 가격받기
-    //         const coinPrice = await (await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)).json();
-    //         console.log(coinPrice);
-    //         setPrice(coinPrice);
-    //         setLoding(false);
-    //     }
-    //     ) ();
-    //     }, [coinId]);
-    //     //coinId를 넣으면 coinId가 바뀔 때 또 다시 컴포넌트가 실행되지 않을까요?
-    //     //coinId는 바뀔 일이 없기 때문에 괜찮슴다
-    
     const loading = dataLoading || priceLoading;
     return (
+      <>
+      <Helmet>
+        <title>
+        {state?.name || "loading"}
+        </title>
+      </Helmet>
         <Container> 
             <Header>
                  <Title>코인 목록 {state?.name || "loading"} </Title>
@@ -177,8 +161,8 @@ function Coin () {
               <span>${coinData?.symbol}</span>
             </OverviewItem>
             <OverviewItem>
-              <span>오픈소스 가능 여부:</span>
-              <span>{coinData?.open_source ? "Yes" : "No"}</span>
+              <span>price:</span>
+              <span>{priceData?.quotes.USD.price.toFixed(2)}</span>
             </OverviewItem>
           </Overview>
           <Description>{coinData?.description}</Description>
@@ -205,7 +189,7 @@ function Coin () {
         </>
       )}
         </Container>
-
+        </>
        
 
     );
