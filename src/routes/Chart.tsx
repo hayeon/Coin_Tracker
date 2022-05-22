@@ -1,7 +1,6 @@
 import { useQuery } from "react-query";
 import { fetchCoinHistory} from "./Api";
 import ApexCharts from "react-apexcharts";
-import { type } from "os";
 
 interface IChart {
     coinId : string;

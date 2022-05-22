@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Route, Switch, useLocation, useParams } from "react-router-dom";
+import { Route, Switch, useLocation, useParams, useRouteMatch, Link} from "react-router-dom";
 import Price from "./Price";
 import Chart from "./Chart";
 import { useQuery } from "react-query";
@@ -50,6 +50,27 @@ const Title = styled.h1 `
 const Loader = styled.div`
     text-align: center;
     display: block;
+`;
+
+const Tabs = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin: 25px 0px;
+  gap: 10px;
+`;
+const Tab = styled.span<{ isActive: boolean }>`
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 400;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  color: ${(props) =>
+    props.isActive ? props.theme.accentColor : props.theme.textColor};
+  a {
+    padding: 7px 0px;
+    display: block;
+  }
 `;
 
 interface Params {
@@ -116,6 +137,8 @@ interface IPriceData {
   }
 
 function Coin () {
+    const priceMatch = useRouteMatch("/:coinId/price");
+    const chartMatch = useRouteMatch("/:coinId/chart");
     const {coinId} = useParams<Params>();
     const {state} = useLocation<RouteState>(); //react-router-dom에서 제공하는 useLocation
     const {isLoading: dataLoading, data:coinData} = useQuery<IInfoData>(
@@ -126,15 +149,7 @@ function Coin () {
       }
 
       );
-  //fetchCoin(coinId)로 작성하면 함수 실행하는 것이기 때문에 함수 실행 후의 promise가 바로 들어간다.
-  //따라서 함수를 바로 실행하는 것이 아닌 () => fetchCoinData(coinId) 형식으로 함수를 실행하는 함수를 새로 만들어 인자로 넘겨야 <함수 자체>를 넘길 수 있다!
- //fetchCoin: 함수 자체를 넘기는 것 fetchCoin() 함수 실행 후의 리턴값을 넘기는 것
     const{isLoading:priceLoading, data:priceData} = useQuery<IPriceData>(["coinPrice",coinId], () => fetchCoinPrice(coinId));
-
-    //리액트 쿼리는 각기 다른 key를 바라기 때문에 같은 키를 쓰는 건 좋지 않음
-    //그리고 리액트 쿼리는 key를 array로 감싸서 표현함
-    //따라서, key를 array로 만든 다음, 첫번째 item은 coinData, 두번째는 coinPrice로 주면 각각 고유한 id를 가지게 됨
-
     const loading = dataLoading || priceLoading;
     return (
       <>
@@ -161,7 +176,7 @@ function Coin () {
               <span>${coinData?.symbol}</span>
             </OverviewItem>
             <OverviewItem>
-              <span>price:</span>
+              <span>가격:</span>
               <span>{priceData?.quotes.USD.price.toFixed(2)}</span>
             </OverviewItem>
           </Overview>
@@ -176,6 +191,15 @@ function Coin () {
               <span>{priceData?.max_supply}</span>
             </OverviewItem>
           </Overview>
+          <Tabs>
+            <Tab isActive={chartMatch !== null}>
+              <Link to={`/${coinId}/chart`}>Chart</Link>
+            </Tab>
+            <Tab isActive={priceMatch !== null}>
+              <Link to={`/${coinId}/price`}>Price</Link>
+            </Tab>
+          </Tabs>
+          
           <Switch>
             <Route path={`/${coinId}/price`}>
               <Price />
