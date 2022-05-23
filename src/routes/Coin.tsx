@@ -4,7 +4,8 @@ import Price from "./Price";
 import Chart from "./Chart";
 import { useQuery } from "react-query";
 import { fetchCoinData, fetchCoinPrice } from "./Api";
-import {Helmet} from "react-helmet";
+import {Helmet, HelmetProvider} from "react-helmet-async";
+import { useHistory } from 'react-router-dom';
 
 const Overview = styled.div` //배경
   display: flex;
@@ -13,6 +14,7 @@ const Overview = styled.div` //배경
   padding: 10px 20px;
   border-radius: 10px;
 `;
+
 const OverviewItem = styled.div`
   display: flex;
   flex-direction: column;
@@ -27,7 +29,6 @@ const OverviewItem = styled.div`
 const Description = styled.p` //코인에 대한 설명
   margin: 20px 0px;
 `;
-
 
 const Container = styled.div `
     padding: 0px, 20px;
@@ -73,6 +74,14 @@ const Tab = styled.span<{ isActive: boolean }>`
   }
 `;
 
+const Back = styled.button`
+  width: 20;
+  height: 30;
+  text-align: center;
+  font-size: 12px;
+  border-radius: 10px;
+`;
+
 interface Params {
     coinId:string;
 };
@@ -102,7 +111,7 @@ interface IInfoData {
     last_data_at : string;
 };
 
-interface IPriceData {
+export interface IPriceData {
     id: string;
     name: string;
     symbol: string;
@@ -141,32 +150,32 @@ function Coin () {
     const chartMatch = useRouteMatch("/:coinId/chart");
     const {coinId} = useParams<Params>();
     const {state} = useLocation<RouteState>(); //react-router-dom에서 제공하는 useLocation
-    const {isLoading: dataLoading, data:coinData} = useQuery<IInfoData>(
-      ["coinData",coinId], 
-      () => fetchCoinData(coinId),
-      {
-        refetchInterval: 5000 //5sec
-      }
-
-      );
-    const{isLoading:priceLoading, data:priceData} = useQuery<IPriceData>(["coinPrice",coinId], () => fetchCoinPrice(coinId));
+    let history = useHistory();
+    
+    const {isLoading:dataLoading, data:coinData} = useQuery<IInfoData>(["coinData",coinId],() => fetchCoinData(coinId),
+      {refetchInterval: 5000 //5sec
+    } );
+    const{ isLoading:priceLoading,data:priceData} = useQuery<IPriceData>(["coinPrice",coinId], () => fetchCoinPrice(coinId));
     const loading = dataLoading || priceLoading;
+  
+   
     return (
       <>
-      <Helmet>
-        <title>
-        {state?.name || "loading"}
-        </title>
-      </Helmet>
+      <HelmetProvider>
+      <Helmet><title>{state?.name || "코인 상세 내역"}</title></Helmet>
+      </HelmetProvider>
+
         <Container> 
             <Header>
-                 <Title>코인 목록 {state?.name || "loading"} </Title>
+           
+                 <Title> {state?.name || "코인 상세 내역"} </Title>
             </Header>
                {loading ? (
         <Loader>Loading...</Loader>
       ) : (
         <>
           <Overview>
+          <Back onClick={ () => {history.push('/');}} > 뒤로가기 </Back>
             <OverviewItem>
               <span>순위:</span>
               <span>{coinData?.rank}</span>
@@ -191,6 +200,7 @@ function Coin () {
               <span>{priceData?.max_supply}</span>
             </OverviewItem>
           </Overview>
+          
           <Tabs>
             <Tab isActive={chartMatch !== null}>
               <Link to={`/${coinId}/chart`}>Chart</Link>
@@ -202,11 +212,11 @@ function Coin () {
           
           <Switch>
             <Route path={`/${coinId}/price`}>
-              <Price />
+              <Price coinId={coinId} />
             </Route>
             
             <Route path={`/${coinId}/chart`}>
-              <Chart coinId= {coinId} /> 
+              <Chart coinId= {coinId}   /> 
               {/* Chart.tsx는 coinId가 없으므로, Chart.tsx에서 Interface 선언 */}
             </Route>
           </Switch>
@@ -214,8 +224,6 @@ function Coin () {
       )}
         </Container>
         </>
-       
-
     );
 };
 

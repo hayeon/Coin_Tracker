@@ -2,7 +2,7 @@ import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { fetchCoins } from "./Api";
-import {Helmet} from "react-helmet";
+import {Helmet, HelmetProvider} from "react-helmet-async";
 
 const Container = styled.div `
     padding: 0px, 20px;
@@ -70,11 +70,13 @@ function CoinList () {
     
     return (
         <>
-      <Helmet> <title> 실시간 코인 현황 </title></Helmet>  
+    <HelmetProvider>
+      <Helmet> <title> 실시간 코인 현황 </title></Helmet> </HelmetProvider> 
        <Container> 
            <Header>
                 <Title>실시간 코인 현황</Title>
            </Header>
+           
            {isLoading ? (<Loader>Loading...</Loader>):(
             <Coins>
                {data?. map((coin)=>( //개체가 'undefined'인 것 같습니다.에 대한 해결책 옵셔널 체이징 ? 추가 값이 unDefined이면 undefined 리턴
