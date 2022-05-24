@@ -21,10 +21,11 @@ const Coins = styled.ul `
 `;
 
 const Coin = styled.li `
-background-color: white;
-    color:${(props) => props.theme.bgColor};
+    background-color:${(props) =>props.theme.bgColor};
+    color:${(props) => props.theme.textColor};
     padding: 20px;
     margin-top: 10px;
+    border: 2px solid ${(props)=> props.theme.textColor};
     border-radius: 15px;
     a {
        align-items: center;
@@ -56,7 +57,8 @@ interface CoinInterface { //ts에게 알려주기 위한 interface
         rank: number,
         is_new: boolean,
         is_active: boolean,
-        type: string, }
+        type: string, };
+
         
 const Img = styled.img`
 width: 25px;
@@ -71,10 +73,13 @@ function CoinList () {
     return (
         <>
     <HelmetProvider>
-      <Helmet> <title> 실시간 코인 현황 </title></Helmet> </HelmetProvider> 
+      <Helmet> <title> 실시간 코인 현황 </title>
+      
+      </Helmet> </HelmetProvider> 
        <Container> 
            <Header>
                 <Title>실시간 코인 현황</Title>
+                <button> 낮 밤🎨 </button>
            </Header>
            
            {isLoading ? (<Loader>Loading...</Loader>):(

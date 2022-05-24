@@ -10,9 +10,10 @@ import { useHistory } from 'react-router-dom';
 const Overview = styled.div` //배경
   display: flex;
   justify-content: space-between;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: ${(props) =>props.theme.bgColor};
   padding: 10px 20px;
   border-radius: 10px;
+  border: 2px solid ${(props)=> props.theme.textColor};
 `;
 
 const OverviewItem = styled.div`
@@ -64,8 +65,9 @@ const Tab = styled.span<{ isActive: boolean }>`
   text-transform: uppercase;
   font-size: 12px;
   font-weight: 400;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: ${(props) =>props.theme.bgColor};
   border-radius: 10px;
+  border: 2px solid ${(props)=> props.theme.textColor};
   color: ${(props) =>
     props.isActive ? props.theme.accentColor : props.theme.textColor};
   a {
@@ -143,7 +145,9 @@ export interface IPriceData {
         volume_24h_change_24h: number;
       };
     };
-  }
+  };
+
+
 
 function Coin () {
     const priceMatch = useRouteMatch("/:coinId/price");
@@ -167,8 +171,8 @@ function Coin () {
 
         <Container> 
             <Header>
-           
                  <Title> {state?.name || "코인 상세 내역"} </Title>
+               
             </Header>
                {loading ? (
         <Loader>Loading...</Loader>
@@ -216,7 +220,7 @@ function Coin () {
             </Route>
             
             <Route path={`/${coinId}/chart`}>
-              <Chart coinId= {coinId}   /> 
+              <Chart  coinId= {coinId}   /> 
               {/* Chart.tsx는 coinId가 없으므로, Chart.tsx에서 Interface 선언 */}
             </Route>
           </Switch>

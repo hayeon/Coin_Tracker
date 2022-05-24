@@ -1,6 +1,11 @@
 import { createGlobalStyle } from "styled-components";
 import Router from "./routes/Router";
 import {ReactQueryDevtools} from "react-query/devtools"; //캐시에 있는 쿼리를 볼 수 있게 도와주는 tool
+import { ThemeProvider } from "styled-components";
+import { darkTheme, lightTheme} from "./theme";
+import { useState } from "react";
+import { useRecoilValue } from "recoil";
+import { isDarkAtom } from "./routes/atoms";
 
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400&display=swap');
@@ -65,12 +70,17 @@ a {
 }
 `;
 
-function App() {
+function App() { //이거 coin.tsx로 보내야함
+  const isDark = useRecoilValue(isDarkAtom);
   return (
-    <>
-      <GlobalStyle />
-      <Router />
-      <ReactQueryDevtools initialIsOpen={true}/> 
+    <> 
+    <ThemeProvider theme={isDark ?(darkTheme) : (lightTheme)}> 
+      
+        <GlobalStyle />
+          <Router />
+          {/* 라우터는 테마 토글을 받을 준비가 안되었으므로 interface 선언 */}
+          <ReactQueryDevtools initialIsOpen={true}/> 
+    </ThemeProvider>
     </>
   );
 }
