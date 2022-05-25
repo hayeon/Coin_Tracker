@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { fetchCoins } from "./Api";
 import {Helmet, HelmetProvider} from "react-helmet-async";
+import { useSetRecoilState } from "recoil";
+import { isDarkAtom } from "./atoms";
 
 const Container = styled.div `
     padding: 0px, 20px;
@@ -69,7 +71,8 @@ margin-right: 10px;
 
 function CoinList () {
     const {isLoading, data} = useQuery<CoinInterface[]>("coinListKey", fetchCoins);
-    
+    const setThemeAtom = useSetRecoilState(isDarkAtom); //recoil 상태를 업데이트 하는 setterFuntion 괄호에 atom을 넣어줘야함
+    const setTheme = () => setThemeAtom((prev)=> !prev);
     return (
         <>
     <HelmetProvider>
@@ -79,7 +82,7 @@ function CoinList () {
        <Container> 
            <Header>
                 <Title>실시간 코인 현황</Title>
-                <button> 낮 밤🎨 </button>
+                <button onClick={setTheme}> 낮 밤🎨 </button>
            </Header>
            
            {isLoading ? (<Loader>Loading...</Loader>):(

@@ -1,7 +1,7 @@
 import { useQuery } from "react-query";
 import { fetchCoinHistory} from "./Api";
 import ApexCharts from "react-apexcharts";
-import { useResetRecoilState } from "recoil";
+import { useRecoilValue, useResetRecoilState } from "recoil";
 import { isDarkAtom } from "./atoms";
 
 interface IChartProps {
@@ -23,9 +23,8 @@ interface IcoinHistory { //api 타입 설정해주기
 function Chart ({coinId}:IChartProps) { //coindId를 가지고 있으니, api request를 보내서 모든 가격을 가져올 수 있음
     const {isLoading, data:historyData} = useQuery<IcoinHistory[]>(["coinHistory",coinId], () => fetchCoinHistory(coinId), {
         refetchInterval: 5000
-    });
-    //배열로 쓴 이유 IcoinHistory[]는 저 값들은 딱 하루치임! 저거 7일치를 가져올거니까 배열로 선언해야함!
-    const isDark = useResetRecoilState(isDarkAtom);
+    }); //배열로 쓴 이유 IcoinHistory[]는 저 값들은 딱 하루치임! 저거 7일치를 가져올거니까 배열로 선언해야함!
+    const isDark = useRecoilValue(isDarkAtom);
     return (
       <div>
           {isLoading ? ("Chart를 로딩중입니다") 
@@ -48,8 +47,9 @@ function Chart ({coinId}:IChartProps) { //coindId를 가지고 있으니, api re
               ] as unknown as number[]}
             options={{ 
                 theme:{
-                   // mode: isDark ? "dark" : : "light"
+                   mode: isDark?("dark") : ("light")
                 },   
+                
                 chart : {
                     height: 500,
                     width: 1000,

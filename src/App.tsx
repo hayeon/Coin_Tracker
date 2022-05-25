@@ -70,8 +70,8 @@ a {
 }
 `;
 
-function App() { //이거 coin.tsx로 보내야함
-  const isDark = useRecoilValue(isDarkAtom);
+function App() { 
+  const isDark = useRecoilValue(isDarkAtom); //value를 가져옴
   return (
     <> 
     <ThemeProvider theme={isDark ?(darkTheme) : (lightTheme)}> 

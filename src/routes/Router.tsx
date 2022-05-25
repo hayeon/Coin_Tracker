@@ -4,7 +4,7 @@ import CoinList from "./CoinList";
 
 function Router () {
 
-    return (
+    return ( 
         <BrowserRouter>
             <Switch>
                <Route path="/:coinId"> 
